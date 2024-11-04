@@ -1,0 +1,6 @@
+build/
+models/
+skybox/
+SourcePath.cpp
+shader.cpp
+path.cpp
