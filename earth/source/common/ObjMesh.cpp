@@ -149,28 +149,57 @@ bool Mesh::makeSphere(int steps){
   std::vector < vec3 > pstrip1;
   
   //latitude
-  for(unsigned int i=0; i < steps; i++){
+  for(unsigned int i=0; i < steps; i++)
+  {
     double phi = i*step_phi;
     //longitude
-    for(unsigned int j=0; j < steps; j++){
+    for(unsigned int j=0; j < steps; j++)
+    {
       double theta = j*step_theta;
       vec3 p = vec3(-cos(theta)*sin(phi), cos(phi), sin(theta)*sin(phi));
       pstrip1.push_back(p);
-    }
+     
     
-    for(unsigned int k=0; (k+1) < pstrip0.size(); k++){
-      vertices.push_back(pstrip0[k]);
+        vec3 n = normalize(p);
+        normals.push_back(n);
+        pstrip1.push_back(n);
+
+        float u = (double)j / (double)(steps - 1);
+        float v = (double)i / (double)(steps - 1);
+        uvs.push_back(vec2(u, v));
       
-      vertices.push_back(pstrip1[k]);
-      
-      vertices.push_back(pstrip0[k+1]);
-      
-      vertices.push_back(pstrip0[k+1]);
-      
-      vertices.push_back(pstrip1[k]);
-       
-      vertices.push_back(pstrip1[k+1]);
     }
+ 
+        for(unsigned int k=0; (k+1) < pstrip0.size(); k++)
+        {
+            vertices.push_back(pstrip0[k]);
+            normals.push_back(normals[pstrip0.size() * (i - 1) + k]);
+            uvs.push_back(uvs[pstrip0.size() * (i - 1) + k]);
+
+            vertices.push_back(pstrip1[k]);
+            normals.push_back(normals[pstrip1.size() * i + k]);
+            uvs.push_back(uvs[pstrip1.size() * i + k]);
+
+            vertices.push_back(pstrip0[k + 1]);
+            normals.push_back(normals[pstrip0.size() * (i - 1) + k + 1]);
+            uvs.push_back(uvs[pstrip0.size() * (i - 1) + k + 1]);
+
+
+            vertices.push_back(pstrip0[k + 1]);
+            normals.push_back(normals[pstrip0.size() * (i - 1) + k + 1]);
+            uvs.push_back(uvs[pstrip0.size() * (i - 1) + k + 1]);
+
+            vertices.push_back(pstrip1[k]);
+            normals.push_back(normals[pstrip1.size() * i + k]);
+            uvs.push_back(uvs[pstrip1.size() * i + k]);
+
+            vertices.push_back(pstrip1[k + 1]);
+            normals.push_back(normals[pstrip1.size() * i + k + 1]);
+            uvs.push_back(uvs[pstrip1.size() * i + k + 1]);
+
+        }
+    
+    
     
     pstrip1.swap(pstrip0);
     pstrip1.clear();
