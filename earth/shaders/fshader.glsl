@@ -21,14 +21,29 @@ out vec4 fragColor;
 
 void main()
 {
-  vec4 L = normalize( (ModelViewLight*LightPosition) - pos );
-  float Kd = 1.0;
+   // float time = animate_time * 0.3;
+   // LightPosition = vec4(cos(time) * LightPosition.x, LightPosition.y, sin(time) * LightPosition.z, 1.0);
+    
+    
+    vec4 L = normalize( (ModelViewLight*LightPosition) - pos );
+    float D = max(dot(normalize(N), L), 0.0);
+    float Kd = 1.0;
   
-  vec4 diffuse_color = texture(textureEarth, texCoord );
-  diffuse_color = Kd*diffuse_color;
+
   
-  fragColor = ambient + diffuse_color;
+    vec4 earth = texture(textureEarth, texCoord);
+    vec4 clouds = texture(textureCloud, texCoord);
+    vec4 night = texture(textureNight, texCoord);
+    earth = Kd*earth;
+
+    
+    vec4 dayCycle = mix(night, earth, D);
+    vec4 diffuse = D * dayCycle;
+    vec4 blend = clamp(earth + clouds, 0.0, 1.0);
+  
+  fragColor = ambient + blend;
   fragColor = clamp(fragColor, 0.0, 1.0);
   fragColor.a = 1.0;
 }
+
 
